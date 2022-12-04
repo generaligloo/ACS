@@ -4,19 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8127dc59-b6f0-4b0e-bd06-b474d6a8083c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/util/Ansi.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
+    <list default="true" id="8127dc59-b6f0-4b0e-bd06-b474d6a8083c" name="Changes" comment="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)">
+      <change afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/json/token.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/util/TokenBody.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,14 +35,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -58,8 +51,18 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1669642895897</updated>
-      <workItem from="1669642898454" duration="398000" />
+      <workItem from="1669642898454" duration="624000" />
+      <workItem from="1669643701769" duration="201000" />
+      <workItem from="1670163077944" duration="4299000" />
     </task>
+    <task id="LOCAL-00001" summary="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)">
+      <created>1669643453856</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1669643453856</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -75,5 +78,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)" />
   </component>
 </project>
