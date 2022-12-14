@@ -37,7 +37,6 @@ public class ACS_Server_Main implements Runnable
         ACS_Server_Main ServerMain = new ACS_Server_Main();
         Thread ServerMainThread = new Thread(ServerMain);
         ServerMainThread.start();
-
         while(End)
         {
             //server listening ici "normalement"
@@ -143,12 +142,6 @@ public class ACS_Server_Main implements Runnable
         }
     }
 
-    private static String generateSafeToken() {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[40];
-        random.nextBytes(bytes);
-        Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
-        return encoder.encodeToString(bytes);
-    }
+
 
 }
