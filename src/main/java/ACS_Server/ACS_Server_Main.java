@@ -1,8 +1,6 @@
 package ACS_Server;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,9 +13,15 @@ import ACS_Server.util.TokenBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.validator.routines.checkdigit.IBANCheckDigit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.*;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.time.LocalDate;
 
 public class ACS_Server_Main implements Runnable
@@ -30,16 +34,36 @@ public class ACS_Server_Main implements Runnable
 
     public static void main(String[] args)
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        File file = new File("src\\main\\java\\ACS_Server\\json\\token.json");
+        //init method
+        System.setProperty("javax.net.ssl.keyStore","src\\main\\java\\ACS_Server\\store\\ServerACS.jks");
+        System.setProperty("javax.net.ssl.keyStorePassword","123456ACS");
+        System.setProperty("javax.net.ssl.trustStore","src\\main\\java\\ACS_Server\\store\\ServerACS.jks");
+        System.setProperty("javax.net.ssl.trustStorePassword","123456ACS");
+
         LOGGER.info(Ansi.GREEN+ "Starting Main Thread ...");
         ACS_Server_Main ServerMain = new ACS_Server_Main();
         Thread ServerMainThread = new Thread(ServerMain);
         ServerMainThread.start();
+        Scanner scanner = new Scanner(System.in);
         while(End)
         {
-            //server listening ici "normalement"
+                if(CommandEnd) {
+                    System.out.println(Ansi.BLUE + "Choisissez une commande :\n");
+                    System.out.println(Ansi.CYAN + "- 1.Generate Token ");
+                    System.out.println(Ansi.CYAN + "- 2.View tokens ");
+                    System.out.println(Ansi.CYAN + "- 3.Quitter ");
+                    command = scanner.nextLine();
+                    LOGGER.info("Input: " + command);
+                    if(StringUtils.isNumeric(command))
+                    {
+                        newCommand = true;
+                        CommandEnd = false;
+                    }
+                    else
+                    {
+                        System.out.println(Ansi.RED + "Command is not an integer ");
+                    }
+                }
             if (newCommand)
             {
                 LOGGER.info(Ansi.GREEN+ "Listening command ...");
@@ -47,41 +71,34 @@ public class ACS_Server_Main implements Runnable
                 switch (command)
                 {
                     case "1":
-                        System.out.println("dd-mm-yyyy");
-                        Scanner scanner = new Scanner(System.in);
+                        System.out.println("dd-mm-yyyy:");
                         String date = scanner.nextLine();
                         Date dateExpi= null;
                         try {
                             dateExpi = new SimpleDateFormat("dd-MM-yyyy").parse(date);
                         } catch (ParseException e) {
-                            throw new RuntimeException(e);
+                            LOGGER.error(Ansi.RED + "erreur Date non valide");
+                            CommandEnd = true;
+                            break;
+                        }
+                        System.out.println("IBAN:");
+                        String IBAN = scanner.nextLine();
+                        Boolean valid = new IBANCheckDigit().isValid(IBAN);
+                        if(!valid)
+                        {
+                            LOGGER.error(Ansi.RED + "erreur IBAN non valide");
+                            CommandEnd = true;
+                            break;
                         }
                         LOGGER.info(dateExpi.toString());
-                        LocalDate localDate = LocalDate.now();
-                        Date dateStart = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                        TokenBody tmpWrite= new TokenBody(dateStart, dateExpi);
-                        LOGGER.info(Ansi.GREEN + "TokenUID: " + tmpWrite.getTokenID().toString());
-                        LOGGER.info(Ansi.GREEN + "TokenBody: " + tmpWrite.getTokenBody());
-                        LOGGER.info(Ansi.GREEN + "TokenStart: " + tmpWrite.getDateCrea().toString());
-                        LOGGER.info(Ansi.GREEN + "Test: " + tmpWrite.getDateExpi().toString());
-                        List<TokenBody> myObjects = new ArrayList<>();
-                        try {
-                            if(file.length() !=0)
-                            {
-                                myObjects = mapper.readValue(file, new TypeReference<List<TokenBody>>() {
-                                });
-                            }
-                            myObjects.add(tmpWrite);
-                            PrintWriter writer = new PrintWriter(file);
-                            writer.print("");
-                            writer.close();
-                            mapper.writeValue(file, myObjects);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        String tmp = AddTokenToJSON(dateExpi, IBAN);
+                        LOGGER.info("Token:" + tmp);
                         CommandEnd = true;
                         break;
                     case "2":
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+                        File file = new File("src\\main\\java\\ACS_Server\\json\\token.json");
                         TokenBody tmpRead = null;
                         try {
                             List<TokenBody> myObjectsRead = new ArrayList<>();
@@ -95,6 +112,7 @@ public class ACS_Server_Main implements Runnable
                                 for (TokenBody en : myObjectsRead) {
                                     LOGGER.info(Ansi.BLUE + "-----------------------------------------------");
                                     LOGGER.info(Ansi.GREEN + "TokenUID: " + en.getTokenID().toString());
+                                    LOGGER.info(Ansi.GREEN + "IBAN: " + en.getIBAN());
                                     LOGGER.info(Ansi.GREEN + "TokenBody: " + en.getTokenBody());
                                     LOGGER.info(Ansi.GREEN + "TokenStart: " + en.getDateCrea().toString());
                                     LOGGER.info(Ansi.GREEN + "TokenExpire: " + en.getDateExpi().toString());
@@ -119,29 +137,68 @@ public class ACS_Server_Main implements Runnable
     @Override
     public void run()
     {
-        Scanner scanner = new Scanner(System.in);
-        while(true)
+        try
         {
-            if(CommandEnd) {
-                System.out.println(Ansi.BLUE + "Choisissez une commande :\n");
-                System.out.println(Ansi.CYAN + "- 1.Generate Token ");
-                System.out.println(Ansi.CYAN + "- 2.View tokens ");
-                System.out.println(Ansi.CYAN + "- 3.Quitter ");
-                command = scanner.nextLine();
-                LOGGER.info("Input: " + command);
-                if(StringUtils.isNumeric(command))
-                {
-                    newCommand = true;
-                    CommandEnd = false;
-                }
-                else
-                {
-                    System.out.println(Ansi.RED + "Command is not an integer ");
-                }
-            }
+            SSLServerSocketFactory sslserversocketfactory =
+                    (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+            SSLServerSocket sslserversocket =
+                    (SSLServerSocket) sslserversocketfactory.createServerSocket(29170);
+            SSLSocket sslsocket = (SSLSocket) sslserversocket.accept();
+            LOGGER.info(Ansi.GREEN + "Connexion au client console réussi !");
+            InputStream inputstream = sslsocket.getInputStream();
+            InputStreamReader inputstreamreader = new InputStreamReader(inputstream);
+            BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
+            OutputStream outputstream = sslsocket.getOutputStream();
+            OutputStreamWriter outputstreamwriter = new OutputStreamWriter(outputstream);
+            BufferedWriter bufferedwriter = new BufferedWriter(outputstreamwriter);
+            LOGGER.info(Ansi.CYAN  + "Reading ...");
+            String IBANBF = bufferedreader.readLine();
+            LOGGER.info("IBAN:" +IBANBF);
+            String DateBF = bufferedreader.readLine();
+            LOGGER.info("DATE_EXPI:" +DateBF);
+            Date dateExpi = new SimpleDateFormat("dd-MM-yyyy").parse(DateBF);
+            String responseTosend = AddTokenToJSON(dateExpi, IBANBF);
+            LOGGER.info("TokenBody:" +responseTosend);
+            bufferedwriter.write(responseTosend + '\n');
+            bufferedwriter.flush();
+            sslsocket.close();
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println(exception);
         }
     }
 
+    public static String AddTokenToJSON(Date date, String IBAN)
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        File file = new File("src\\main\\java\\ACS_Server\\json\\token.json");
 
+        LocalDate localDate = LocalDate.now();
+        Date dateStart = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        TokenBody tmpWrite= new TokenBody(dateStart, date , IBAN);
+        LOGGER.info(Ansi.GREEN + "TokenUID: " + tmpWrite.getTokenID().toString());
+        LOGGER.info(Ansi.GREEN + "IBAN: " + tmpWrite.getIBAN());
+        LOGGER.info(Ansi.GREEN + "TokenBody: " + tmpWrite.getTokenBody());
+        LOGGER.info(Ansi.GREEN + "TokenStart: " + tmpWrite.getDateCrea().toString());
+        LOGGER.info(Ansi.GREEN + "Date Expiration: " + tmpWrite.getDateExpi().toString());
+        List<TokenBody> myObjects = new ArrayList<>();
+        try {
+            if(file.length() !=0)
+            {
+                myObjects = mapper.readValue(file, new TypeReference<List<TokenBody>>() {
+                });
+            }
+            myObjects.add(tmpWrite);
+            PrintWriter writer = new PrintWriter(file);
+            writer.print("");
+            writer.close();
+            mapper.writeValue(file, myObjects);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return tmpWrite.getTokenBody();
+    }
 
 }

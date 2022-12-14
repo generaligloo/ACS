@@ -23,6 +23,13 @@ public class TokenBody {
         this.tokenBody = tokenBody;
     }
 
+    public String getIBAN() {
+        return IBAN;
+    }
+    public void setIBAN(String iban) {
+        this.IBAN = iban;
+    }
+
     public Date getDateCrea() {
         return dateCrea;
     }
@@ -43,10 +50,12 @@ public class TokenBody {
     protected String tokenBody;
     protected Date dateCrea;
     protected Date dateExpi;
+    protected String IBAN;
 
-    public TokenBody(Date dateCrea, Date dateExpi) {
+    public TokenBody(Date dateCrea, Date dateExpi, String IBAN) {
         this.dateCrea = dateCrea;
         this.dateExpi = dateExpi;
+        this.IBAN = IBAN;
         tokenID = GenerateUID();
         tokenBody = generateSafeToken();
     }
