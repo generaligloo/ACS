@@ -1,0 +1,57 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -4,12 +4,8 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="8127dc59-b6f0-4b0e-bd06-b474d6a8083c" name="Changes" comment="-Rebuild le keystore JKS&#10;-Générer son certificat publique&#10;-Ajout au truststore du certificat &quot;client&quot;">
++    <list default="true" id="8127dc59-b6f0-4b0e-bd06-b474d6a8083c" name="Changes" comment="-création d'une méthode AddTokenToJSON(...)&#10;-modification de l'objet TokenBody pour rajouter l'IBAN&#10;-rajoute la library apache pour verifier l'IBAN&#10;-modification de mainThread pour acceuillir un thread d'écoute ClientConsole&#10;-Ajout des paramètres par défaut&#10;-migration de la boucle &quot;commande&quot; dans la boucle de base">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/json/token.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/json/token.json" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/util/TokenBody.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/util/TokenBody.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -66,7 +62,7 @@
+       <workItem from="1670834153221" duration="2727000" />
+       <workItem from="1670918016876" duration="97000" />
+       <workItem from="1670918295868" duration="2026000" />
+-      <workItem from="1671036722881" duration="6379000" />
++      <workItem from="1671036722881" duration="6718000" />
+     </task>
+     <task id="LOCAL-00001" summary="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)">
+       <created>1669643453856</created>
+@@ -89,7 +85,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1671038224669</updated>
+     </task>
+-    <option name="localTasksCounter" value="4" />
++    <task id="LOCAL-00004" summary="-création d'une méthode AddTokenToJSON(...)&#10;-modification de l'objet TokenBody pour rajouter l'IBAN&#10;-rajoute la library apache pour verifier l'IBAN&#10;-modification de mainThread pour acceuillir un thread d'écoute ClientConsole&#10;-Ajout des paramètres par défaut&#10;-migration de la boucle &quot;commande&quot; dans la boucle de base">
++      <created>1671045434702</created>
++      <option name="number" value="00004" />
++      <option name="presentableId" value="LOCAL-00004" />
++      <option name="project" value="LOCAL" />
++      <updated>1671045434702</updated>
++    </task>
++    <option name="localTasksCounter" value="5" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -110,6 +113,7 @@
+     <MESSAGE value="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)" />
+     <MESSAGE value="Modification du Parser JSON-google -&gt; JSON-Jackson (toujours mis à jour)&#10;Objet TokenBody pour la création du token&#10;Créer un token OK&#10;Afficher les token OK" />
+     <MESSAGE value="-Rebuild le keystore JKS&#10;-Générer son certificat publique&#10;-Ajout au truststore du certificat &quot;client&quot;" />
+-    <option name="LAST_COMMIT_MESSAGE" value="-Rebuild le keystore JKS&#10;-Générer son certificat publique&#10;-Ajout au truststore du certificat &quot;client&quot;" />
++    <MESSAGE value="-création d'une méthode AddTokenToJSON(...)&#10;-modification de l'objet TokenBody pour rajouter l'IBAN&#10;-rajoute la library apache pour verifier l'IBAN&#10;-modification de mainThread pour acceuillir un thread d'écoute ClientConsole&#10;-Ajout des paramètres par défaut&#10;-migration de la boucle &quot;commande&quot; dans la boucle de base" />
++    <option name="LAST_COMMIT_MESSAGE" value="-création d'une méthode AddTokenToJSON(...)&#10;-modification de l'objet TokenBody pour rajouter l'IBAN&#10;-rajoute la library apache pour verifier l'IBAN&#10;-modification de mainThread pour acceuillir un thread d'écoute ClientConsole&#10;-Ajout des paramètres par défaut&#10;-migration de la boucle &quot;commande&quot; dans la boucle de base" />
+   </component>
+ </project>
+\ No newline at end of file

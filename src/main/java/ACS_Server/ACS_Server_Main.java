@@ -1,7 +1,6 @@
 package ACS_Server;
 
 import java.io.*;
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -21,7 +20,6 @@ import org.apache.commons.lang3.*;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 import java.time.LocalDate;
 
 public class ACS_Server_Main implements Runnable
@@ -54,7 +52,8 @@ public class ACS_Server_Main implements Runnable
                     System.out.println(Ansi.BLUE + "Choisissez une commande :\n");
                     System.out.println(Ansi.CYAN + "- 1.Generate Token ");
                     System.out.println(Ansi.CYAN + "- 2.View tokens ");
-                    System.out.println(Ansi.CYAN + "- 3.Quitter ");
+                    System.out.println(Ansi.CYAN + "- 3.Verify token");
+                    System.out.println(Ansi.CYAN + "- 4.Quitter ");
                     command = scanner.nextLine();
                     LOGGER.info("Input: " + command);
                     if(StringUtils.isNumeric(command))
@@ -71,12 +70,11 @@ public class ACS_Server_Main implements Runnable
             {
                 LOGGER.info(Ansi.GREEN+ "Listening command ...");
                 LOGGER.info("command: " + command);
-                switch (command)
-                {
-                    case "1":
+                switch (command) {
+                    case "1" -> {
                         System.out.println("dd-mm-yyyy:");
                         String date = scanner.nextLine();
-                        Date dateExpi= null;
+                        Date dateExpi;
                         try {
                             dateExpi = new SimpleDateFormat("dd-MM-yyyy").parse(date);
                         } catch (ParseException e) {
@@ -86,9 +84,8 @@ public class ACS_Server_Main implements Runnable
                         }
                         System.out.println("IBAN:");
                         String IBAN = scanner.nextLine();
-                        Boolean valid = new IBANCheckDigit().isValid(IBAN);
-                        if(!valid)
-                        {
+                        boolean valid = new IBANCheckDigit().isValid(IBAN);
+                        if (!valid) {
                             LOGGER.error(Ansi.RED + "erreur IBAN non valide");
                             CommandEnd = true;
                             break;
@@ -97,40 +94,29 @@ public class ACS_Server_Main implements Runnable
                         String tmp = AddTokenToJSON(dateExpi, IBAN);
                         LOGGER.info("Token:" + tmp);
                         CommandEnd = true;
-                        break;
-                    case "2":
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-                        File file = new File("src\\main\\java\\ACS_Server\\json\\token.json");
-                        TokenBody tmpRead = null;
-                        try {
-                            List<TokenBody> myObjectsRead = new ArrayList<>();
-                            if(file.length() == 0)
-                            {
-                                LOGGER.error("FICHIER JSON VIDE.");
-                            }
-                            else {
-                                myObjectsRead = mapper.readValue(file, new TypeReference<List<TokenBody>>() {
-                                });
-                                for (TokenBody en : myObjectsRead) {
-                                    LOGGER.info(Ansi.BLUE + "-----------------------------------------------");
-                                    LOGGER.info(Ansi.GREEN + "TokenUID: " + en.getTokenID().toString());
-                                    LOGGER.info(Ansi.GREEN + "IBAN: " + en.getIBAN());
-                                    LOGGER.info(Ansi.GREEN + "TokenBody: " + en.getTokenBody());
-                                    LOGGER.info(Ansi.GREEN + "TokenStart: " + en.getDateCrea().toString());
-                                    LOGGER.info(Ansi.GREEN + "TokenExpire: " + en.getDateExpi().toString());
-                                }
-                            }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                    }
+                    case "2" -> {
+                        AffichTokens();
+                        CommandEnd = true;
+                    }
+                    case "3" -> {
+                        System.out.println(Ansi.BLUE + "Choisissez un token à vérifier :\n" + Ansi.SANE);
+                        String tokenAverif = scanner.nextLine();
+                        int response = verifToken(tokenAverif);
+                        switch (response) {
+                            case -1 -> System.out.println(Ansi.RED + "ERROR - TOKENVERIF" + Ansi.SANE);
+                            case 0 -> System.out.println(Ansi.RED + "Token introuvable." + Ansi.SANE);
+                            case 1 -> System.out.println(Ansi.RED + "Token trouvé mais expiré." + Ansi.SANE);
+                            case 2 ->
+                                    System.out.println(Ansi.GREEN + "Token vérifié correctement et valide!" + Ansi.SANE);
                         }
                         CommandEnd = true;
-                        break;
-                    case "3":
+                    }
+                    case "4" -> {
                         LOGGER.info(Ansi.RED + "Fermeture du Thread de commande et sortie de la boucle1");
                         ServerMainThread.stop();
                         End = false;
-                        break;
+                    }
                 }
                 newCommand = false;
             }
@@ -168,7 +154,7 @@ public class ACS_Server_Main implements Runnable
 
         } catch (Exception exception) {
             exception.printStackTrace();
-            System.out.println(exception);
+            LOGGER.error(exception.toString());
         }
     }
 
@@ -204,4 +190,86 @@ public class ACS_Server_Main implements Runnable
         return tmpWrite.getTokenBody();
     }
 
+    public static int verifToken(String tokenVer)
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        File file = new File("src\\main\\java\\ACS_Server\\json\\token.json");
+        try {
+            List<TokenBody> myObjectsRead;
+            if(file.length() == 0)
+            {
+                LOGGER.error("FICHIER JSON VIDE.");
+                return 0;
+            }
+            else {
+                myObjectsRead = mapper.readValue(file, new TypeReference<List<TokenBody>>() {
+                });
+                for (TokenBody en : myObjectsRead) {
+                    if(en.getTokenBody().equals(tokenVer))
+                    {
+                        LOGGER.info(Ansi.CYAN + "------Token trouvé------" + Ansi.SANE);
+                        LOGGER.info(Ansi.GREEN + "TokenUID: " + en.getTokenID().toString());
+                        LOGGER.info(Ansi.GREEN + "IBAN: " + en.getIBAN());
+                        LOGGER.info(Ansi.GREEN + "TokenBody: " + en.getTokenBody());
+                        LOGGER.info(Ansi.GREEN + "TokenStart: " + en.getDateCrea().toString());
+                        LOGGER.info(Ansi.GREEN + "TokenExpire: " + en.getDateExpi().toString()+ Ansi.SANE);
+                        LOGGER.info(Ansi.CYAN + "------Vérification Expiration------" + Ansi.SANE);
+                        LocalDate localDate = LocalDate.now();
+                        Date dateNow = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                        if(en.getDateExpi().after(dateNow))
+                        {
+                            LOGGER.info(Ansi.GREEN + "Date Valide !" + Ansi.SANE);
+                            return 2;
+                        }
+                        else
+                        {
+                            LOGGER.info(Ansi.CYAN + "Date Invalide" + Ansi.SANE);
+                            return 1;
+                        }
+                    }
+                    LOGGER.info(Ansi.BLUE + "-----------------------------------------------" + Ansi.SANE);
+                    LOGGER.info(Ansi.GREEN + "TokenUID: " + en.getTokenID().toString());
+                    LOGGER.info(Ansi.GREEN + "IBAN: " + en.getIBAN());
+                    LOGGER.info(Ansi.GREEN + "TokenBody: " + en.getTokenBody());
+                    LOGGER.info(Ansi.GREEN + "TokenStart: " + en.getDateCrea().toString());
+                    LOGGER.info(Ansi.GREEN + "TokenExpire: " + en.getDateExpi().toString()+ Ansi.SANE);
+                }
+            }
+        } catch (IOException e) {
+            return -1;
+        }
+        return 0;
+        // -1 error
+        // 0 Introuvable
+        // 1 Trouvé mais expiré
+        // 2 Trouvé et valide
+    }
+
+    public static void AffichTokens()
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        File file = new File("src\\main\\java\\ACS_Server\\json\\token.json");
+        try {
+            List<TokenBody> myObjectsRead;
+            if (file.length() == 0) {
+                LOGGER.error("FICHIER JSON VIDE.");
+            } else {
+                myObjectsRead = mapper.readValue(file, new TypeReference<List<TokenBody>>() {
+                });
+                for (TokenBody en : myObjectsRead) {
+                    LOGGER.info(Ansi.BLUE + "-----------------------------------------------" + Ansi.SANE);
+                    LOGGER.info(Ansi.GREEN + "TokenUID: " + en.getTokenID().toString());
+                    LOGGER.info(Ansi.GREEN + "IBAN: " + en.getIBAN());
+                    LOGGER.info(Ansi.GREEN + "TokenBody: " + en.getTokenBody());
+                    LOGGER.info(Ansi.GREEN + "TokenStart: " + en.getDateCrea().toString());
+                    LOGGER.info(Ansi.GREEN + "TokenExpire: " + en.getDateExpi().toString() + Ansi.SANE);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.error(Ansi.RED + e + Ansi.SANE);
+            throw new RuntimeException(e);
+        }
+    }
 }
