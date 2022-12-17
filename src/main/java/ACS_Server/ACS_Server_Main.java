@@ -42,7 +42,10 @@ public class ACS_Server_Main implements Runnable
 
         LOGGER.info(Ansi.GREEN+ "Starting Main Thread ...");
         ACS_Server_Main ServerMain = new ACS_Server_Main();
+        ExchangeACQ ExchangeACQ = new ExchangeACQ();
+        Thread ExchangeACQThread = new Thread(ExchangeACQ);
         Thread ServerMainThread = new Thread(ServerMain);
+        ExchangeACQThread.start();
         ServerMainThread.start();
         Scanner scanner = new Scanner(System.in);
         while(End)
