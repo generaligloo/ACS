@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8127dc59-b6f0-4b0e-bd06-b474d6a8083c" name="Changes" comment="-Rebuild le keystore JKS&#10;-Générer son certificat publique&#10;-Ajout au truststore du certificat &quot;client&quot;">
+    <list default="true" id="8127dc59-b6f0-4b0e-bd06-b474d6a8083c" name="Changes" comment="-Modification de la console&#10;-Ajout Commande de verification de token&#10;-Affichage de token par méthode&#10;-Connexion ACQ amélioré">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/ACS_Server_Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/ExchangeACQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/ExchangeACQ.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ACS_Server/json/token.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ACS_Server/json/token.json" afterDir="false" />
     </list>
@@ -41,12 +40,12 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "E:/MASTERB1/IdeaProjects/ACS"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/MASTERB1/IdeaProjects/ACS&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="ACS_Server_Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ACS_Server.ACS_Server_Main" />
@@ -83,7 +82,8 @@
       <workItem from="1670918295868" duration="2026000" />
       <workItem from="1671036722881" duration="6379000" />
       <workItem from="1671272640308" duration="5890000" />
-      <workItem from="1672135027911" duration="3317000" />
+      <workItem from="1672135027911" duration="3513000" />
+      <workItem from="1672153866335" duration="5621000" />
     </task>
     <task id="LOCAL-00001" summary="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)">
       <created>1669643453856</created>
@@ -106,7 +106,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671038224669</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="-Modification de la console&#10;-Ajout Commande de verification de token&#10;-Affichage de token par méthode&#10;-Connexion ACQ amélioré">
+      <created>1672138523379</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1672138523379</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -127,6 +134,8 @@
     <MESSAGE value="Debut ACS:&#10;- pom.xml&#10;- Ajout d'un meilleur LOGGER et du JSON-Simple&#10;- Ansi code dans un package util&#10;- &quot;générateur de token&quot; xd&#10;- Thread pour l'execution de commande&#10;- Main qui écoute les commandes (à changer plus tard si ça ne plait pas)" />
     <MESSAGE value="Modification du Parser JSON-google -&gt; JSON-Jackson (toujours mis à jour)&#10;Objet TokenBody pour la création du token&#10;Créer un token OK&#10;Afficher les token OK" />
     <MESSAGE value="-Rebuild le keystore JKS&#10;-Générer son certificat publique&#10;-Ajout au truststore du certificat &quot;client&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Rebuild le keystore JKS&#10;-Générer son certificat publique&#10;-Ajout au truststore du certificat &quot;client&quot;" />
+    <MESSAGE value="-Modification de la console&#10;-Ajout Commande de verificaiton de token&#10;-Affichage de token par méthode&#10;-Connexion ACQ amélioré" />
+    <MESSAGE value="-Modification de la console&#10;-Ajout Commande de verification de token&#10;-Affichage de token par méthode&#10;-Connexion ACQ amélioré" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Modification de la console&#10;-Ajout Commande de verification de token&#10;-Affichage de token par méthode&#10;-Connexion ACQ amélioré" />
   </component>
 </project>

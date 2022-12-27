@@ -30,8 +30,9 @@ public class ExchangeACQ implements Runnable{
         System.setProperty("javax.net.ssl.keyStorePassword","123456ACS");
         System.setProperty("javax.net.ssl.trustStore","src\\main\\java\\ACS_Server\\store\\ServerACS.jks");
         System.setProperty("javax.net.ssl.trustStorePassword","123456ACS");
-        try
-        {
+        try {
+            while(true)
+            {
             SSLServerSocketFactory sslserversocketfactory =
                     (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
             SSLSocket sslsocket;
@@ -45,43 +46,42 @@ public class ExchangeACQ implements Runnable{
             OutputStream outputstream = sslsocket.getOutputStream();
             OutputStreamWriter outputstreamwriter = new OutputStreamWriter(outputstream);
             BufferedWriter bufferedwriter = new BufferedWriter(outputstreamwriter);
-            while (sslsocket.isConnected()|| sslsocket.isBound())
-            {
-                LOGGER.info(Ansi.CYAN  + "Reading ...");
-                String messageFromACQ = bufferedreader.readLine();
-                LOGGER.info("Message received: " + messageFromACQ);
-                if (messageFromACQ.equals("@TokenVerif"))
-                {
-                    LOGGER.info(Ansi.CYAN  + "Reading TokenBody...");
-                    String tokenBodyVerif = bufferedreader.readLine();
-                    int verification = verifToken(tokenBodyVerif);
-                    switch (verification) {
-                        case -1 -> {
-                            LOGGER.info(Ansi.RED + "ERROR - TOKENVERIF" + Ansi.SANE);
-                            bufferedwriter.write("@Payement-Error");
-                        }
-                        case 0 -> {
-                            LOGGER.info(Ansi.RED + "Token introuvable." + Ansi.SANE);
-                            bufferedwriter.write("@Payement-InvalideToken");
-                        }
-                        case 1 -> {
-                            LOGGER.info(Ansi.RED + "Token trouvé mais expiré." + Ansi.SANE);
-                            bufferedwriter.write("@Payement-InvalideDate");
-                        }
-                        case 2 -> {
-                            LOGGER.info(Ansi.GREEN + "Token vérifié correctement et valide!" + Ansi.SANE);
-                            bufferedwriter.write("@Payement-OK");
-                        }
+            LOGGER.info(Ansi.CYAN + "Reading ...");
+            String messageFromACQ = bufferedreader.readLine();
+            LOGGER.info("Message received: " + messageFromACQ);
+            if (messageFromACQ.equals("@TokenVerif")) {
+                LOGGER.info(Ansi.CYAN + "Reading TokenBody...");
+                String tokenBodyVerif = bufferedreader.readLine();
+                LOGGER.info(Ansi.CYAN + tokenBodyVerif + Ansi.SANE);
+                int verification = verifToken(tokenBodyVerif);
+                switch (verification) {
+                    case -1 -> {
+                        LOGGER.info(Ansi.RED + "ERROR - TOKENVERIF" + Ansi.SANE);
+                        bufferedwriter.write("@Payement-Error" + '\n');
+                        bufferedwriter.flush();
                     }
-                    bufferedwriter.flush();
+                    case 0 -> {
+                        LOGGER.info(Ansi.RED + "Token introuvable." + Ansi.SANE);
+                        bufferedwriter.write("@Payement-InvalideToken" + '\n');
+                        bufferedwriter.flush();
+                    }
+                    case 1 -> {
+                        LOGGER.info(Ansi.RED + "Token trouvé mais expiré." + Ansi.SANE);
+                        bufferedwriter.write("@Payement-InvalideDate" + '\n');
+                        bufferedwriter.flush();
+                    }
+                    case 2 -> {
+                        LOGGER.info(Ansi.GREEN + "Token vérifié correctement et valide!" + Ansi.SANE);
+                        bufferedwriter.write("@Payement-OK" + '\n');
+                        bufferedwriter.flush();
+                    }
                 }
-                else
-                {
-                    LOGGER.info(Ansi.RED + "InvalideMessageReception" +Ansi.SANE);
-                }
+            } else {
+                LOGGER.info(Ansi.RED + "InvalideMessageReception" + Ansi.SANE);
             }
-
-
+            LOGGER.info(Ansi.GREEN + "Restarting connection..." + Ansi.SANE);
+            sslsocket.close();
+        }
         } catch (Exception exception) {
             exception.printStackTrace();
             System.out.println(exception);
