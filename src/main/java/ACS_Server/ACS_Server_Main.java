@@ -1,6 +1,12 @@
 package ACS_Server;
 
 import java.io.*;
+import java.security.KeyStore;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -133,7 +139,7 @@ public class ACS_Server_Main implements Runnable
             SSLServerSocket sslserversocket =
                     (SSLServerSocket) sslserversocketfactory.createServerSocket(29170);
             SSLSocket sslsocket = (SSLSocket) sslserversocket.accept();
-            LOGGER.info(Ansi.GREEN + "Connexion au client console réussi !");
+            LOGGER.info(Ansi.GREEN + "Connexion au client console réussi !" + Ansi.SANE);
             InputStream inputstream = sslsocket.getInputStream();
             InputStreamReader inputstreamreader = new InputStreamReader(inputstream);
             BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
@@ -146,10 +152,29 @@ public class ACS_Server_Main implements Runnable
             String DateBF = bufferedreader.readLine();
             LOGGER.info("DATE_EXPI:" +DateBF);
             Date dateExpi = new SimpleDateFormat("dd-MM-yyyy").parse(DateBF);
-            String responseTosend = AddTokenToJSON(dateExpi, IBANBF);
-            LOGGER.info("TokenBody:" +responseTosend);
-            bufferedwriter.write(responseTosend + '\n');
-            bufferedwriter.flush();
+
+            String SignEnc = bufferedreader.readLine();
+            LOGGER.info("Signature (Base64):" +SignEnc);
+            byte[] Signature = Base64.getDecoder().decode(SignEnc);
+            String Keypath="src\\main\\java\\ACS_Server\\store\\ServerACS.jks";
+
+            boolean testSign = verifySignature(Keypath, Signature, IBANBF.getBytes());
+
+            if(testSign)
+            {
+                LOGGER.info(Ansi.GREEN + "Signature OK !" + Ansi.SANE);
+                String responseTosend = AddTokenToJSON(dateExpi, IBANBF);
+                LOGGER.info("TokenBody:" +responseTosend);
+                bufferedwriter.write(responseTosend + '\n');
+                bufferedwriter.flush();
+            }
+            else
+            {
+                LOGGER.info(Ansi.RED + "Signature Error !" + Ansi.SANE);
+                String responseTosend = "Error";
+                bufferedwriter.write(responseTosend + '\n');
+                bufferedwriter.flush();
+            }
             sslsocket.close();
 
         } catch (Exception exception) {
@@ -272,4 +297,28 @@ public class ACS_Server_Main implements Runnable
             throw new RuntimeException(e);
         }
     }
+
+    public static PublicKey LoadPublicKeyClient(String Keypath) throws Exception
+    {
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        keyStore.load(new FileInputStream(Keypath), "123456ACS".toCharArray());
+        Certificate certificate = keyStore.getCertificate("client");
+        PublicKey publicKey = certificate.getPublicKey();
+        return publicKey;
+    }
+
+    private static boolean verifySignature(String publicKeyPath, byte[] signature, byte[] signedContent) throws Exception {
+        PublicKey publicKey = LoadPublicKeyClient(publicKeyPath);
+        Signature s = Signature.getInstance("SHA256withRSA");
+        s.initVerify(publicKey);
+        s.update(signedContent);
+        if(s.verify(signature)) {
+            LOGGER.info(Ansi.GREEN +"signature signed by matching key"+ Ansi.SANE);
+            return true;
+        } else {
+            LOGGER.info(Ansi.RED + "signature NOT signed by matching key" + Ansi.SANE);
+            return false;
+        }
+    }
+
 }
